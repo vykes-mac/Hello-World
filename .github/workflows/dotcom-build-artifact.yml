@@ -1,0 +1,57 @@
+name: Publish Website
+
+on:
+  push:
+    branches:
+      - trunk
+  workflow_dispatch:
+jobs:
+  Build-Artifact-Action:
+    name: Build-Artifact-Action
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+      with:
+        submodules: true
+        ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Install PHP dependencies
+      uses: php-actions/composer@v6
+      with:
+        dev: no
+        php_version: 8.0
+
+    - name: Setup node 16
+      uses: actions/setup-node@v4
+      with:
+        node-version: 16
+
+    - name: Install node dependencies
+      run: npm install
+
+    - name: Upload the artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: repository-artifact
+        path: |
+          .
+          !.DS_Store 
+          !.stylelintrc.json 
+          !.eslintrc 
+          !.git 
+          !.gitattributes 
+          !.github 
+          !.gitignore 
+          !README.md 
+          !composer.json 
+          !composer.lock 
+          !node_modules 
+          !vendor
+          !package-lock.json 
+          !package.json 
+          !.travis.yml 
+          !phpcs.xml.dist 
+          !sass 
+          !style.css.map 
+          !yarn.lock
+    
